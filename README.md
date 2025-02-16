@@ -22,3 +22,12 @@ Requires .DLL files (included). For Linux and MacOS you need to download binarie
 
 Should work under other 64 bit Delphis.
 Needs tests under 32 bit Lazarus and 32 bit Delphi.
+
+## Linux (Debian, Ubuntu, Mint)
+
+1) apt install apt-file libwebp-dev
+2) apt-file search libwebp.so
+It will list you how your libwebp.so files are named *exactly* and where they are
+3) Open WebpImage.pas and edit "const LIBWEBPF"
+4) Change the value of that const. Enter filename (excluding path) found in step 2
+5) Compile and run
