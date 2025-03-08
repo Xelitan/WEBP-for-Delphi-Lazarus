@@ -5,8 +5,8 @@ unit WebpImage;
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 // Description:	Reader and writer for Webp images                             //
-// Version:	0.1                                                           //
-// Date:	09-FEB-2025                                                   //
+// Version:	0.2                                                           //
+// Date:	08-MAR-2025                                                   //
 // License:     MIT                                                           //
 // Target:	Win64, Free Pascal, Delphi                                    //
 // Copyright:	(c) 2025 Xelitan.com.                                         //
@@ -16,14 +16,14 @@ unit WebpImage;
 
 interface
 
-uses Classes, Graphics, SysUtils, Math, Types, Dialogs;
+uses Classes, Graphics, SysUtils, Types, Dialogs;
 
-const LIBWEBP = 'libwebp.dll';
+const LIB_WEBP = 'libwebp.dll';
 
-  function WebPGetInfo(const data: PByte; data_size: Cardinal; var width, height: Integer): Integer; cdecl; external LIBWEBP;
-  function WebPDecodeBGRA(const data: PByte; data_size: Cardinal; var width, height: Integer): PByte; cdecl; external LIBWEBP;
-  function WebPEncodeRGBA(const rgba: PByte; width, height, stride: Integer; quality: Single; out output: PByte): LongWord; cdecl; external LIBWEBP;
-  procedure WebPFree(ptr: Pointer); cdecl; external LIBWEBP;
+  function WebPGetInfo(const data: PByte; data_size: Cardinal; var width, height: Integer): Integer; cdecl; external LIB_WEBP;
+  function WebPDecodeBGRA(const data: PByte; data_size: Cardinal; var width, height: Integer): PByte; cdecl; external LIB_WEBP;
+  function WebPEncodeRGBA(const rgba: PByte; width, height, stride: Integer; quality: Single; out output: PByte): LongWord; cdecl; external LIB_WEBP;
+  procedure WebPFree(ptr: Pointer); cdecl; external LIB_WEBP;
 
   { TWebpImage }
 type
@@ -163,6 +163,19 @@ begin
   FCompression := Value;
 end;
 
+procedure RemoveAlpha(Bmp: TBitmap);
+var x,y: Integer;
+    P: PByteArray;
+begin
+  for y:=0 to Bmp.Height-1 do begin
+    P := Bmp.Scanline[y];
+
+    for x:=0 to Bmp.Width-1 do begin
+      P[4*x+3] := 255;
+    end;
+  end;
+end;
+
 procedure TWebpImage.Assign(Source: TPersistent);
 var Src: TGraphic;
 begin
@@ -170,6 +183,7 @@ begin
     Src := Source as TGraphic;
     FBmp.SetSize(Src.Width, Src.Height);
     FBmp.Canvas.Draw(0,0, Src);
+    RemoveAlpha(FBmp);
   end;
 end;
 
