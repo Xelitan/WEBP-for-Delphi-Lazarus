@@ -5,7 +5,7 @@ unit WebpImage;
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 // Description:	Reader and writer for Webp images                             //
-// Version:	0.2                                                           //
+// Version:	0.2.1                                                           //
 // Date:	08-MAR-2025                                                   //
 // License:     MIT                                                           //
 // Target:	Win64, Free Pascal, Delphi                                    //
@@ -171,7 +171,7 @@ begin
     P := Bmp.Scanline[y];
 
     for x:=0 to Bmp.Width-1 do begin
-      P[4*x+3] := 255;
+      P[4*x+3] := 155;
     end;
   end;
 end;
@@ -179,11 +179,14 @@ end;
 procedure TWebpImage.Assign(Source: TPersistent);
 var Src: TGraphic;
 begin
-  if source is tgraphic then begin
+  if Source is TGraphic then begin
     Src := Source as TGraphic;
-    FBmp.SetSize(Src.Width, Src.Height);
-    FBmp.Canvas.Draw(0,0, Src);
-    RemoveAlpha(FBmp);
+    if Src is TBitmap then FBmp.Assign(Src)
+    else begin
+      FBmp.SetSize(Src.Width, Src.Height);
+      FBmp.Canvas.Draw(0,0, Src);
+      RemoveAlpha(FBmp);
+    end;
   end;
 end;
 
